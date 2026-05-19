@@ -55,13 +55,6 @@ export default function AppLayout({
     return null;
   }
 
-  const navItems = [
-    { href: '/novo-esboço', icon: '✏️', label: 'Novo', mobile: true },
-    { href: '/biblia', icon: '📖', label: 'Bíblia', mobile: true },
-    { href: '/harpa', icon: '🎵', label: 'Harpa', mobile: true },
-    { href: '/dicionario', icon: '📚', label: 'Dicionário', mobile: true },
-    { href: '/search', icon: '🔎', label: 'Pesquisar', mobile: true },
-  ];
 
   const isActive = (href: string) => pathname === href;
 

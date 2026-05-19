@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LIVROS_BIBLIA, TIPOS_ESTUDO } from '@/lib/biblia-data';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,7 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 export default function NovoEsbocoPage() {
   const router = useRouter();
   const [step, setStep] = useState<'form' | 'loading' | 'success'>('form');
-  const [jobId, setJobId] = useState<string>('');
+  const [_, setJobId] = useState<string>('');
+  
 
   // Form state
   const [livroSelecionado, setLivroSelecionado] = useState('');

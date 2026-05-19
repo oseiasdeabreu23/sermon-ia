@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { esbocos, users } from '../../../../../db/schema';
 import { eq } from 'drizzle-orm';
-import { initializeApp, getApps } from 'firebase-admin/app';
+import { getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 
 let firebaseAuth: any;

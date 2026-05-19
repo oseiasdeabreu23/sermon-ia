@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+
 import Link from 'next/link';
 import html2pdf from 'html2pdf.js';
 import { EsbocoResponse } from '@/types';
 
 export default function EsbocoPage({ params }: { params: { id: string } }) {
-  const router = useRouter();
   const [esboço, setEsboço] = useState<EsbocoResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -44,7 +43,7 @@ export default function EsbocoPage({ params }: { params: { id: string } }) {
       jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
     };
 
-    html2pdf().set(opt).from(element).save();
+    if (element) html2pdf().set(opt).from(element).save();
   };
 
   const handleCopyToClipboard = async () => {
