@@ -36,12 +36,19 @@ export default function RegisterPage() {
       router.push('/novo-esboço');
     } catch (err: any) {
       let errorMessage = 'Erro ao criar conta';
+      console.error('Register error:', err);
       if (err.code === 'auth/email-already-in-use') {
         errorMessage = 'Este email já está cadastrado';
       } else if (err.code === 'auth/invalid-email') {
         errorMessage = 'Email inválido';
       } else if (err.code === 'auth/weak-password') {
         errorMessage = 'Senha muito fraca';
+      } else if (err.code === 'auth/operation-not-allowed') {
+        errorMessage = 'Criação de usuários desabilitada no Firebase';
+      } else if (err.code === 'auth/too-many-requests') {
+        errorMessage = 'Muitas tentativas. Tente novamente mais tarde';
+      } else if (err.message) {
+        errorMessage = err.message;
       }
       setError(errorMessage);
     } finally {
