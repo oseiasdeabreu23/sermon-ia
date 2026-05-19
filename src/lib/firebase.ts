@@ -10,6 +10,17 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+if (typeof window !== 'undefined') {
+  console.log('Firebase Config Keys:', {
+    apiKey: firebaseConfig.apiKey ? '✓' : '✗',
+    authDomain: firebaseConfig.authDomain ? '✓' : '✗',
+    projectId: firebaseConfig.projectId ? '✓' : '✗',
+    storageBucket: firebaseConfig.storageBucket ? '✓' : '✗',
+    messagingSenderId: firebaseConfig.messagingSenderId ? '✓' : '✗',
+    appId: firebaseConfig.appId ? '✓' : '✗',
+  });
+}
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
