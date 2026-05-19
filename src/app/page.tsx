@@ -70,13 +70,13 @@ export default function Home() {
       {/* CTA Buttons */}
       <div className="flex flex-col sm:flex-row gap-4">
         <Link
-          href="/auth/login"
+          href="/login"
           className="btn-primary px-8 py-3 text-lg rounded-lg font-semibold hover:shadow-lg transition-all"
         >
           Entrar
         </Link>
         <Link
-          href="/auth/register"
+          href="/register"
           className="btn-outline px-8 py-3 text-lg rounded-lg font-semibold bg-white/10 border-white text-white hover:bg-white/20 transition-all"
         >
           Criar Conta
