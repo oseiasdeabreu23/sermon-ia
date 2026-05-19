@@ -1,0 +1,38 @@
+{
+  "name": "sermao-ia",
+  "version": "0.1.0",
+  "description": "SermãoIA - Ferramenta de geração de esboços de pregação com IA",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:push": "drizzle-kit push:sqlite",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "next": "14.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@libsql/client": "^0.3.5",
+    "drizzle-orm": "^0.29.1",
+    "firebase": "^10.7.0",
+    "axios": "^1.6.2",
+    "zustand": "^4.4.0",
+    "tailwindcss": "^3.3.6",
+    "@headlessui/react": "^1.7.17",
+    "jspdf": "^2.5.1",
+    "html2pdf.js": "^0.10.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "drizzle-kit": "^0.20.10",
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.0.4"
+  }
+}
