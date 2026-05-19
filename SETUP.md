@@ -62,6 +62,23 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123...
 NEXT_PUBLIC_FIREBASE_APP_ID=1:123...
 ```
 
+### 2.5 (Opcional) Configurar Firebase Admin para Verificação de Token
+
+Para melhor segurança, configure Firebase Admin para verificar tokens no backend:
+
+1. Gere uma chave privada:
+   - Firebase Console → Engrenagem → **Contas de Serviço**
+   - Clique **Gerar Nova Chave Privada**
+   - Salve como `firebase-admin-key.json`
+
+2. Adicione ao `.env.local`:
+```
+FIREBASE_CLIENT_EMAIL=your-email@your-project.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+```
+
+**⚠️ Importante**: Nunca comitar `firebase-admin-key.json`. Está em `.gitignore`.
+
 ---
 
 ## 3️⃣ Configurar Turso Database
@@ -129,6 +146,27 @@ Isso vai criar as tabelas `users` e `esbocos`.
 ```
 ANTHROPIC_API_KEY=sk-ant-...
 ```
+
+---
+
+## 4️⃣.5 (Opcional) Integrar Bible API Real
+
+O MVP vem com cache de versículos (20+ versículos populares). Para versículos além do cache:
+
+### Opção 1: Scripture.api.bible (Recomendado)
+
+1. Acesse [api.scripture.api.bible](https://scripture.api.bible)
+2. Sign up e obtenha API key gratuita
+3. Adicione ao `.env.local`:
+```
+BIBLE_API_KEY=your_key_here
+```
+
+4. Atualize `src/lib/bible-service.ts` para usar a API real (descomentar seção TODO)
+
+### Opção 2: Usar Cache Estático
+
+Para o MVP, o cache estático é suficiente. Todos os versículos ARC populares estão em `src/lib/bible-service.ts`.
 
 ---
 

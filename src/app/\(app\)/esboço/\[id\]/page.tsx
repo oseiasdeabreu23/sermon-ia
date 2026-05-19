@@ -15,7 +15,8 @@ export default function EsbocoPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     const fetchEsboço = async () => {
       try {
-        const response = await fetch(`/api/esboço/${params.id}`);
+        const { fetchWithAuth } = await import('@/lib/firebase-client');
+        const response = await fetchWithAuth(`/api/esboço/${params.id}`);
         if (!response.ok) {
           throw new Error('Esboço não encontrado');
         }

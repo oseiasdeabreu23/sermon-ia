@@ -47,9 +47,10 @@ export default function NovoEsbocoPage() {
     setStep('loading');
 
     try {
-      const response = await fetch('/api/esboço/gerar', {
+      const { fetchWithAuth } = await import('@/lib/firebase-client');
+
+      const response = await fetchWithAuth('/api/esboço/gerar', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jobId: newJobId,
           livro: livroSelecionado,
@@ -62,7 +63,8 @@ export default function NovoEsbocoPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao gerar esboço');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao gerar esboço');
       }
 
       const data = await response.json();
