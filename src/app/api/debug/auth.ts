@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuth } from 'firebase-admin/auth';
 import { getApps } from 'firebase-admin/app';
 import { db } from '@/lib/db';
-import { users } from '../../../db/schema';
+import { users } from '../../../../../db/schema';
 import { eq } from 'drizzle-orm';
 
 let firebaseAuth: any;
