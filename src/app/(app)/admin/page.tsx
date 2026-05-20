@@ -14,13 +14,30 @@ interface AIConfig {
   isActive: number;
 }
 
+const AVAILABLE_MODELS = {
+  anthropic: [
+    'claude-opus-4-7',
+    'claude-sonnet-4-6',
+    'claude-haiku-4-5-20251001',
+    'claude-3-5-opus-20241022',
+    'claude-3-5-sonnet-20241022',
+  ],
+  openai: [
+    'gpt-4-turbo',
+    'gpt-4',
+    'gpt-3.5-turbo',
+    'gpt-4o',
+    'gpt-4o-mini',
+  ],
+};
+
 export default function AdminPage() {
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [configs, setConfigs] = useState<AIConfig[]>([]);
   const [newProvider, setNewProvider] = useState<'anthropic' | 'openai'>('anthropic');
-  const [newModel, setNewModel] = useState('');
+  const [newModel, setNewModel] = useState('claude-opus-4-7');
   const [newApiKey, setNewApiKey] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -204,7 +221,11 @@ export default function AdminPage() {
             </label>
             <select
               value={newProvider}
-              onChange={(e) => setNewProvider(e.target.value as 'anthropic' | 'openai')}
+              onChange={(e) => {
+                const provider = e.target.value as 'anthropic' | 'openai';
+                setNewProvider(provider);
+                setNewModel(AVAILABLE_MODELS[provider][0]);
+              }}
               className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-blue focus:outline-none"
             >
               <option value="anthropic">Anthropic (Claude)</option>
@@ -216,13 +237,18 @@ export default function AdminPage() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Modelo
             </label>
-            <input
-              type="text"
+            <select
               value={newModel}
               onChange={(e) => setNewModel(e.target.value)}
-              placeholder={newProvider === 'anthropic' ? 'ex: claude-opus-4-7' : 'ex: gpt-4-turbo'}
               className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-blue focus:outline-none"
-            />
+            >
+              <option value="">Selecione um modelo</option>
+              {AVAILABLE_MODELS[newProvider].map((model) => (
+                <option key={model} value={model}>
+                  {model}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
