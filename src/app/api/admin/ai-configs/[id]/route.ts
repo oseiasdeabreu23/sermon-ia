@@ -23,12 +23,20 @@ try {
         credential: cert(serviceAccount as any),
       });
       firebaseAuth = getAuth(app);
+      console.log('✅ Firebase Admin initialized in ai-configs endpoint');
+    } else {
+      console.warn('Missing Firebase credentials', {
+        hasProjectId: !!serviceAccount.projectId,
+        hasClientEmail: !!serviceAccount.clientEmail,
+        hasPrivateKey: !!serviceAccount.privateKey,
+      });
     }
   } else {
     firebaseAuth = getAuth(apps[0]);
+    console.log('✅ Firebase Admin already initialized');
   }
 } catch (error) {
-  console.warn('Firebase Admin not configured');
+  console.error('Error initializing Firebase Admin:', error);
 }
 
 async function verifyAdminToken(token: string) {
