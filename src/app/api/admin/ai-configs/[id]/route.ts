@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { apiConfigs } from '../../../../../../db/schema';
 import { eq } from 'drizzle-orm';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import { getApps } from 'firebase-admin/app';
 import { createClient } from '@libsql/client';
 import { v4 as uuidv4 } from 'uuid';
 import { getAdminUser } from '@/lib/admin-check';
@@ -11,9 +11,24 @@ import { getAdminUser } from '@/lib/admin-check';
 let firebaseAuth: any;
 try {
   const apps = getApps();
-  firebaseAuth = apps.length ? getAuth(apps[0]) : null;
+  if (!apps.length) {
+    const serviceAccount = {
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    };
+
+    if (serviceAccount.projectId && serviceAccount.clientEmail && serviceAccount.privateKey) {
+      const app = initializeApp({
+        credential: cert(serviceAccount as any),
+      });
+      firebaseAuth = getAuth(app);
+    }
+  } else {
+    firebaseAuth = getAuth(apps[0]);
+  }
 } catch (error) {
-  console.warn('Firebase Admin not available');
+  console.warn('Firebase Admin not configured');
 }
 
 async function verifyAdminToken(token: string) {
