@@ -15,6 +15,15 @@ function initializeFirebase() {
     return { auth: cachedAuth, app: cachedApp };
   }
 
+  console.log('🔍 Environment Variables Available:', {
+    NEXT_PUBLIC_FIREBASE_API_KEY: typeof process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: typeof process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID: typeof process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: typeof process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: typeof process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    NEXT_PUBLIC_FIREBASE_APP_ID: typeof process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  });
+
   const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -24,14 +33,16 @@ function initializeFirebase() {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   };
 
-  console.log('🔍 Firebase Config Debug:', {
+  console.log('🔍 Firebase Config Values:', {
     apiKey: firebaseConfig.apiKey ? `✓ (${firebaseConfig.apiKey.slice(0, 10)}...)` : '✗ MISSING',
-    authDomain: firebaseConfig.authDomain ? `✓ (${firebaseConfig.authDomain})` : '✗ MISSING',
-    projectId: firebaseConfig.projectId ? `✓ (${firebaseConfig.projectId})` : '✗ MISSING',
-    storageBucket: firebaseConfig.storageBucket ? `✓ (${firebaseConfig.storageBucket})` : '✗ MISSING',
-    messagingSenderId: firebaseConfig.messagingSenderId ? `✓ (${firebaseConfig.messagingSenderId})` : '✗ MISSING',
-    appId: firebaseConfig.appId ? `✓ (${firebaseConfig.appId})` : '✗ MISSING',
+    authDomain: firebaseConfig.authDomain || '✗ MISSING',
+    projectId: firebaseConfig.projectId || '✗ MISSING',
+    storageBucket: firebaseConfig.storageBucket || '✗ MISSING',
+    messagingSenderId: firebaseConfig.messagingSenderId || '✗ MISSING',
+    appId: firebaseConfig.appId || '✗ MISSING',
   });
+
+  console.log('📦 Full config object:', firebaseConfig);
 
   const requiredFields = ['apiKey', 'authDomain', 'projectId'];
   const missingFields = requiredFields.filter((field) => !firebaseConfig[field as keyof typeof firebaseConfig]);
