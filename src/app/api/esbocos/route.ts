@@ -91,6 +91,21 @@ export async function GET(request: NextRequest) {
         conteudo = null;
       }
 
+      // Safe date conversion
+      let createdAtString;
+      try {
+        if (esboço.createdAt instanceof Date) {
+          createdAtString = esboço.createdAt.toISOString();
+        } else if (esboço.createdAt) {
+          createdAtString = new Date(esboço.createdAt).toISOString();
+        } else {
+          createdAtString = new Date().toISOString();
+        }
+      } catch (e) {
+        console.warn('⚠️  Invalid date for esboço', esboço.id, ':', esboço.createdAt);
+        createdAtString = new Date().toISOString();
+      }
+
       return {
         id: esboço.id || '',
         livro: esboço.livro || '',
@@ -101,7 +116,7 @@ export async function GET(request: NextRequest) {
         publicoAlvo: esboço.publicoAlvo || '',
         status: esboço.status || 'completed',
         conteudo: conteudo || {},
-        createdAt: esboço.createdAt?.toISOString() || new Date().toISOString(),
+        createdAt: createdAtString,
       };
     });
 
