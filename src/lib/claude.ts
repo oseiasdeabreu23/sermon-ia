@@ -117,7 +117,7 @@ RETORNE APENAS ESTE JSON (sem markdown, sem explicações):
 }`;
 
   const message = await client.messages.create({
-    model: 'claude-opus-4-1',
+    model: 'claude-opus-4-7',
     max_tokens: 4096,
     messages: [
       {
