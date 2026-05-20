@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { apiConfigs, appSettings } from '../../../../../../db/schema';
+import { apiConfigs } from '../../../../../../db/schema';
 import { eq } from 'drizzle-orm';
 import { getAuth } from 'firebase-admin/auth';
 import { getApps } from 'firebase-admin/app';
+import { createClient } from '@libsql/client';
 import { v4 as uuidv4 } from 'uuid';
 import { getAdminUser } from '@/lib/admin-check';
 
@@ -80,24 +81,16 @@ export async function POST(
         .set({ isActive: 1 })
         .where(eq(apiConfigs.id, params.id));
 
-      // Atualizar setting
-      const existingSetting = await db
-        .select()
-        .from(appSettings)
-        .where(eq(appSettings.key, 'active_ai_provider'));
+      // Atualizar setting usando libsql client direto para evitar problemas com Drizzle
+      const libsqlClient = createClient({
+        url: process.env.TURSO_CONNECTION_URL!,
+        authToken: process.env.TURSO_AUTH_TOKEN!,
+      });
 
-      if (existingSetting.length > 0) {
-        await db
-          .update(appSettings)
-          .set({ value: params.id })
-          .where(eq(appSettings.key, 'active_ai_provider'));
-      } else {
-        await db.insert(appSettings).values({
-          id: uuidv4(),
-          key: 'active_ai_provider',
-          value: params.id,
-        });
-      }
+      const settingId = uuidv4();
+      await libsqlClient.execute(
+        `INSERT INTO app_settings (id, key, value) VALUES ('${settingId}', 'active_ai_provider', '${params.id}')`
+      );
 
       return NextResponse.json({ message: 'Configuração ativada com sucesso' });
     }
