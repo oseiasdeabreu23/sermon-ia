@@ -37,9 +37,14 @@ async function verifyToken(token: string): Promise<VerifiedToken> {
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('📍 [GET /api/esbocos] Iniciando requisição');
+
     // Get authorization header (required)
     const authHeader = request.headers.get('authorization');
+    console.log('📍 Auth header:', authHeader ? 'presente' : 'ausente');
+
     if (!authHeader?.startsWith('Bearer ')) {
+      console.warn('⚠️  Sem autenticação válida');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -49,25 +54,33 @@ export async function GET(request: NextRequest) {
     try {
       firebaseUser = await verifyToken(idToken);
       console.log('✅ Token autenticado para:', firebaseUser.uid);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('❌ Erro ao verificar token:', error.message);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
     // Get user from database
+    console.log('📍 Buscando usuário com firebaseUid:', firebaseUser.uid);
     const userResult = await db.select().from(users).where(eq(users.firebaseUid, firebaseUser.uid));
+    console.log('📍 Usuários encontrados:', userResult.length);
 
     if (!userResult.length) {
       // No user found, return empty array
+      console.log('⚠️  Usuário não encontrado, retornando array vazio');
       return NextResponse.json([]);
     }
 
     const user = userResult[0];
+    console.log('✅ Usuário encontrado:', user.id);
 
     // Fetch all sketches for this user
+    console.log('📍 Buscando esboços para userId:', user.id);
     const userSketches = await db
       .select()
       .from(esbocos)
       .where(eq(esbocos.userId, user.id));
+
+    console.log('✅ Esboços encontrados:', userSketches.length);
 
     // Parse conteúdo JSON for each sketch
     const response = userSketches.map((esboço) => {
@@ -92,9 +105,11 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    console.log('✅ Retornando', response.length, 'esboços');
     return NextResponse.json(response);
   } catch (error: any) {
-    console.error('Error fetching esboços:', error);
+    console.error('❌ Erro ao processar /api/esbocos:', error);
+    console.error('Stack:', error.stack);
     return NextResponse.json(
       { error: error.message || 'Erro ao processar requisição' },
       { status: 500 }
