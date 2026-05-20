@@ -128,12 +128,16 @@ export default function AdminPage() {
         body: JSON.stringify({ action: 'activate' }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        setError('Erro ao ativar configuração');
+        setError(data.error || 'Erro ao ativar configuração');
+        console.error('Erro ao ativar:', data);
         return;
       }
 
       setSuccess('Configuração ativada com sucesso!');
+      setError('');
 
       // Atualizar status
       setConfigs(configs.map(c => ({
@@ -142,6 +146,7 @@ export default function AdminPage() {
       })));
     } catch (err: any) {
       setError(err.message || 'Erro ao ativar configuração');
+      console.error('Erro na requisição:', err);
     }
   };
 
