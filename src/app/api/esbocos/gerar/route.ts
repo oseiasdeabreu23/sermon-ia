@@ -93,10 +93,22 @@ export async function POST(request: NextRequest) {
     if (!userResult.length) {
       // Create user if doesn't exist
       userId = uuidv4();
+
+      // Try to get email from Firebase Admin SDK if available
+      let userEmail = firebaseUser.email || 'unknown@example.com';
+      if (!firebaseUser.email && firebaseAuth) {
+        try {
+          const firebaseUserData = await firebaseAuth.getUser(firebaseUser.uid);
+          userEmail = firebaseUserData.email || userEmail;
+        } catch (e) {
+          console.warn('Could not fetch user email from Firebase Admin');
+        }
+      }
+
       await db.insert(users).values({
         id: userId,
         firebaseUid: firebaseUser.uid,
-        email: firebaseUser.email || 'unknown@example.com',
+        email: userEmail,
         nome: '',
       });
     } else {
