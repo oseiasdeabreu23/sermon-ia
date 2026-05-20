@@ -19,7 +19,7 @@ export default function AppLayout({
   useEffect(() => {
     const unsubscribe = getAuth().onAuthStateChanged((user) => {
       if (!user) {
-        router.push('/auth/login');
+        router.push('/login');
       } else {
         setIsAuthenticated(true);
       }
