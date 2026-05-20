@@ -71,8 +71,10 @@ export function getFirebaseAuth(): Auth | null {
 
 export { getFirebaseAuth as auth };
 
-export default {
+const firebaseModule = {
   get auth() {
     return getFirebaseAuth();
   },
 };
+
+export default firebaseModule;
