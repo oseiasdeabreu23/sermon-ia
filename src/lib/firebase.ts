@@ -1,20 +1,18 @@
 'use client';
 
 import { initializeApp, getApp, getApps } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
+import { getAuth as getFirebaseAuth, Auth } from 'firebase/auth';
 
-let auth: Auth | null = null;
-let app: any = null;
+let cachedAuth: Auth | null = null;
+let cachedApp: any = null;
 
 function initializeFirebase() {
-  // Only initialize in browser
   if (typeof window === 'undefined') {
     return null;
   }
 
-  // Return existing instance if already initialized
-  if (auth && app) {
-    return { auth, app };
+  if (cachedAuth && cachedApp) {
+    return { auth: cachedAuth, app: cachedApp };
   }
 
   const firebaseConfig = {
@@ -35,7 +33,6 @@ function initializeFirebase() {
     appId: firebaseConfig.appId ? `✓ (${firebaseConfig.appId})` : '✗ MISSING',
   });
 
-  // Validate required fields
   const requiredFields = ['apiKey', 'authDomain', 'projectId'];
   const missingFields = requiredFields.filter((field) => !firebaseConfig[field as keyof typeof firebaseConfig]);
 
@@ -46,35 +43,24 @@ function initializeFirebase() {
 
   try {
     if (getApps().length === 0) {
-      app = initializeApp(firebaseConfig);
+      cachedApp = initializeApp(firebaseConfig);
       console.log('✅ Firebase initialized successfully');
     } else {
-      app = getApp();
+      cachedApp = getApp();
       console.log('✅ Firebase already initialized');
     }
-    auth = getAuth(app);
+    cachedAuth = getFirebaseAuth(cachedApp);
   } catch (error) {
     console.error('❌ Firebase initialization failed:', error);
     return null;
   }
 
-  return { auth, app };
+  return { auth: cachedAuth, app: cachedApp };
 }
 
-// Lazy initialize when first accessed
-export function getFirebaseAuth(): Auth | null {
-  if (!auth) {
+export function getAuth(): Auth {
+  if (!cachedAuth) {
     initializeFirebase();
   }
-  return auth;
+  return cachedAuth as Auth;
 }
-
-export { getFirebaseAuth as auth };
-
-const firebaseModule = {
-  get auth() {
-    return getFirebaseAuth();
-  },
-};
-
-export default firebaseModule;

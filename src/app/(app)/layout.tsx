@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { auth } from '@/lib/firebase';
+import { getAuth } from '@/lib/firebase';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 
@@ -17,7 +17,7 @@ export default function AppLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = getAuth().onAuthStateChanged((user) => {
       if (!user) {
         router.push('/auth/login');
       } else {
@@ -31,7 +31,7 @@ export default function AppLayout({
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await signOut(getAuth());
       router.push('/');
     } catch (error) {
       console.error('Erro ao fazer logout:', error);

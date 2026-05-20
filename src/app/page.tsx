@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { auth } from '@/lib/firebase';
+import { getAuth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
@@ -11,7 +11,7 @@ export default function Home() {
   const [_, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = getAuth().onAuthStateChanged((user) => {
       if (user) {
         setIsAuthenticated(true);
         router.push('/novo-esboço');
