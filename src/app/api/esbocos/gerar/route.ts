@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { esbocos, users } from '../../../../../db/schema';
 import { eq } from 'drizzle-orm';
-import { gerarEsboço } from '@/lib/claude';
+import { generateSermonOutline } from '@/lib/ai-provider';
 import { obterVersiculo } from '@/lib/bible-service';
 import { v4 as uuidv4 } from 'uuid';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
@@ -109,10 +109,10 @@ export async function POST(request: NextRequest) {
     // Get Bible verse text
     const textoVersiculo = await obterVersiculo(livro, capitulo, versiculo);
 
-    // Generate with Claude
+    // Generate with AI Provider
     let conteudo;
     try {
-      conteudo = await gerarEsboço({
+      conteudo = await generateSermonOutline({
         livro,
         capitulo,
         versiculo,

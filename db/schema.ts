@@ -6,6 +6,7 @@ export const users = sqliteTable('users', {
   firebaseUid: text('firebase_uid').unique().notNull(),
   email: text('email').unique().notNull(),
   nome: text('nome'),
+  isAdmin: integer('is_admin').default(0),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -40,7 +41,37 @@ export const esbocos = sqliteTable('esbocos', {
     .notNull(),
 });
 
+export const apiConfigs = sqliteTable('api_configs', {
+  id: text('id').primaryKey(),
+  provider: text('provider', { enum: ['anthropic', 'openai'] }).notNull(),
+  model: text('model').notNull(),
+  apiKey: text('api_key').notNull(),
+  isActive: integer('is_active').default(1),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+export const appSettings = sqliteTable('app_settings', {
+  id: text('id').primaryKey(),
+  key: text('key').unique().notNull(),
+  value: text('value').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type Esboço = typeof esbocos.$inferSelect;
 export type InsertEsboço = typeof esbocos.$inferInsert;
+export type ApiConfig = typeof apiConfigs.$inferSelect;
+export type InsertApiConfig = typeof apiConfigs.$inferInsert;
+export type AppSetting = typeof appSettings.$inferSelect;
+export type InsertAppSetting = typeof appSettings.$inferInsert;

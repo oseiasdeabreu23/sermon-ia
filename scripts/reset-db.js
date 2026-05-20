@@ -25,6 +25,21 @@ async function resetDatabase() {
       console.log('  - users table not found');
     }
     
+    // Drop new tables if they exist
+    try {
+      await client.execute('DROP TABLE IF EXISTS api_configs;');
+      console.log('  ✓ Dropped api_configs table');
+    } catch (e) {
+      console.log('  - api_configs table not found');
+    }
+
+    try {
+      await client.execute('DROP TABLE IF EXISTS app_settings;');
+      console.log('  ✓ Dropped app_settings table');
+    } catch (e) {
+      console.log('  - app_settings table not found');
+    }
+
     // Create users table
     await client.execute(`
       CREATE TABLE users (
@@ -32,6 +47,7 @@ async function resetDatabase() {
         firebase_uid TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
         nome TEXT,
+        is_admin INTEGER DEFAULT 0,
         created_at INTEGER NOT NULL DEFAULT (unixepoch()),
         updated_at INTEGER NOT NULL DEFAULT (unixepoch())
       )
@@ -57,7 +73,33 @@ async function resetDatabase() {
       )
     `);
     console.log('  ✓ Created esbocos table');
-    
+
+    // Create api_configs table
+    await client.execute(`
+      CREATE TABLE api_configs (
+        id TEXT PRIMARY KEY NOT NULL,
+        provider TEXT NOT NULL,
+        model TEXT NOT NULL,
+        api_key TEXT NOT NULL,
+        is_active INTEGER DEFAULT 1,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+      )
+    `);
+    console.log('  ✓ Created api_configs table');
+
+    // Create app_settings table
+    await client.execute(`
+      CREATE TABLE app_settings (
+        id TEXT PRIMARY KEY NOT NULL,
+        key TEXT NOT NULL UNIQUE,
+        value TEXT NOT NULL,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+      )
+    `);
+    console.log('  ✓ Created app_settings table');
+
     console.log('\n✅ Database reset complete!');
     process.exit(0);
   } catch (error) {
