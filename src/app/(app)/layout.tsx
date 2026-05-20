@@ -15,6 +15,7 @@ export default function AppLayout({
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
     const unsubscribe = getAuth().onAuthStateChanged((user) => {
@@ -22,6 +23,7 @@ export default function AppLayout({
         router.push('/login');
       } else {
         setIsAuthenticated(true);
+        setUserEmail(user.email || '');
       }
       setIsLoading(false);
     });
@@ -60,6 +62,17 @@ export default function AppLayout({
 
   return (
     <div className="min-h-screen bg-light-bg flex flex-col">
+      {/* Header com Perfil */}
+      <header className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-bold text-primary-blue">SermãoIA</h1>
+          <div className="text-right">
+            <p className="text-xs text-gray-500">Acesso:</p>
+            <p className="text-sm font-semibold text-gray-900">{userEmail}</p>
+          </div>
+        </div>
+      </header>
+
       {/* Main Content */}
       <main className="flex-1 pb-navbar w-full">
         {children}
@@ -98,6 +111,20 @@ export default function AppLayout({
             <span className="text-xl mb-1">📚</span>
             <span>Dicionário</span>
           </button>
+
+          {/* Admin */}
+          <Link
+            href="/admin"
+            className={`flex-1 flex flex-col items-center justify-center py-3 text-xs transition-colors ${
+              isActive('/admin')
+                ? 'text-primary-blue border-t-2 border-primary-blue'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+            title="Painel Administrativo"
+          >
+            <span className="text-xl mb-1">⚙️</span>
+            <span>Admin</span>
+          </Link>
 
           {/* Logout */}
           <button
