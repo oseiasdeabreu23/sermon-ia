@@ -124,6 +124,7 @@ export async function POST(request: NextRequest) {
     // Generate with AI Provider
     let conteudo;
     try {
+      console.log('🔄 Iniciando geração de esboço...');
       conteudo = await generateSermonOutline({
         livro,
         capitulo,
@@ -133,8 +134,10 @@ export async function POST(request: NextRequest) {
         publicoAlvo: publicoAlvo || 'Comunidade geral',
         textoVersiculo,
       });
+      console.log('✅ Esboço gerado com sucesso');
     } catch (error: any) {
-      console.error('Error generating with Claude:', error);
+      console.error('❌ Erro ao gerar esboço:', error.message);
+      console.error('Stack:', error.stack);
 
       await db.insert(esbocos).values({
         id: esbocoId,

@@ -43,6 +43,8 @@ async function getActiveProvider() {
       .where(eq(appSettings.key, 'active_ai_provider'));
 
     const providerId = setting[0]?.value;
+    console.log('📝 Setting de IA ativa:', providerId);
+    
     if (!providerId) {
       throw new Error('Nenhum provedor de IA configurado');
     }
@@ -56,8 +58,10 @@ async function getActiveProvider() {
       throw new Error('Configuração de IA não encontrada');
     }
 
+    console.log('✅ Provider encontrado:', config[0].provider, config[0].model);
     return config[0];
   } catch (error) {
+    console.error('❌ Erro ao buscar provider:', (error as any).message);
     throw new Error('Erro ao buscar configuração de IA: ' + (error as any).message);
   }
 }
