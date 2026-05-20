@@ -1,6 +1,5 @@
 import { db } from './db';
-import { apiConfigs, appSettings } from '../../db/schema';
-import { eq } from 'drizzle-orm';
+import { apiConfigs } from '../../db/schema';
 import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 
@@ -37,29 +36,32 @@ export interface EsbocoConteudo {
 
 async function getActiveProvider() {
   try {
-    const setting = await db
+    // Procurar por uma configuração ativa (isActive = 1)
+    const configs = await db
       .select()
-      .from(appSettings)
-      .where(eq(appSettings.key, 'active_ai_provider'));
+      .from(apiConfigs);
 
-    const providerId = setting[0]?.value;
-    console.log('📝 Setting de IA ativa:', providerId);
-    
-    if (!providerId) {
-      throw new Error('Nenhum provedor de IA configurado');
+    // Se houver múltiplas ativas, pegar a primeira
+    // Se nenhuma estiver marcada como ativa, procurar por variáveis de ambiente
+    let activeConfig = configs.find(c => c.isActive === 1);
+
+    if (!activeConfig && process.env.ANTHROPIC_API_KEY) {
+      console.log('⚠️  Nenhuma configuração ativa, usando variáveis de ambiente');
+      return {
+        id: 'env-anthropic',
+        provider: 'anthropic',
+        model: process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022',
+        apiKey: process.env.ANTHROPIC_API_KEY,
+        isActive: 1,
+      };
     }
 
-    const config = await db
-      .select()
-      .from(apiConfigs)
-      .where(eq(apiConfigs.id, providerId));
-
-    if (!config[0]) {
-      throw new Error('Configuração de IA não encontrada');
+    if (!activeConfig) {
+      throw new Error('Nenhum provedor de IA configurado e nenhuma chave de API encontrada');
     }
 
-    console.log('✅ Provider encontrado:', config[0].provider, config[0].model);
-    return config[0];
+    console.log('✅ Provider encontrado:', activeConfig.provider, activeConfig.model);
+    return activeConfig;
   } catch (error) {
     console.error('❌ Erro ao buscar provider:', (error as any).message);
     throw new Error('Erro ao buscar configuração de IA: ' + (error as any).message);
