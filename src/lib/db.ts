@@ -1,6 +1,6 @@
 import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
-import * as schema from '@/../../db/schema';
+import * as schema from '../../db/schema';
 
 if (!process.env.TURSO_CONNECTION_URL) {
   throw new Error('TURSO_CONNECTION_URL is missing');
