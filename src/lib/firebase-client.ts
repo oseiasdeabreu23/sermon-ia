@@ -1,6 +1,7 @@
-import { auth } from '@/lib/firebase';
+import { getAuth } from '@/lib/firebase';
 
 export async function getIdToken(): Promise<string> {
+  const auth = getAuth();
   const user = auth.currentUser;
   if (!user) {
     throw new Error('Usuário não autenticado');
