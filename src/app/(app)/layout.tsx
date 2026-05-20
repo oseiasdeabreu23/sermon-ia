@@ -113,11 +113,19 @@ export default function AppLayout({
             <span>Bíblia</span>
           </button>
 
-          {/* Harpa (placeholder) */}
-          <button className="flex-1 flex flex-col items-center justify-center py-3 text-xs text-gray-400 hover:text-gray-600 transition-colors opacity-50 cursor-not-allowed">
-            <span className="text-xl mb-1">🎵</span>
-            <span>Harpa</span>
-          </button>
+          {/* Admin */}
+          <Link
+            href="/admin"
+            className={`flex-1 flex flex-col items-center justify-center py-3 text-xs transition-colors ${
+              isActive('/admin')
+                ? 'text-primary-blue border-t-2 border-primary-blue'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+            title="Painel Administrativo"
+          >
+            <span className="text-xl mb-1">⚙️</span>
+            <span>Admin</span>
+          </Link>
 
           {/* Logout */}
           <button
