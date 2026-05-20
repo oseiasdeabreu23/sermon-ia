@@ -20,7 +20,12 @@ async function verifyAdminToken(token: string) {
   }
 
   const decodedToken = await firebaseAuth.verifyIdToken(token);
-  const admin = await getAdminUser(decodedToken.uid);
+
+  // Tenta verificar admin primeiro pelo UID, depois pelo email
+  let admin = await getAdminUser(decodedToken.uid);
+  if (!admin && decodedToken.email) {
+    admin = await getAdminUser(decodedToken.email);
+  }
 
   if (!admin) {
     throw new Error('Acesso negado: usuário não é administrador');

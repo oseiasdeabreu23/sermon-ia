@@ -15,12 +15,21 @@ export async function checkAdminByFirebaseUid(firebaseUid: string): Promise<bool
   }
 }
 
-export async function getAdminUser(firebaseUid: string) {
+export async function getAdminUser(firebaseUidOrEmail: string) {
   try {
-    const result = await db
+    // Tenta primeiro por Firebase UID
+    let result = await db
       .select()
       .from(users)
-      .where(eq(users.firebaseUid, firebaseUid));
+      .where(eq(users.firebaseUid, firebaseUidOrEmail));
+
+    // Se não encontrar e parece um email, tenta por email
+    if (result.length === 0 && firebaseUidOrEmail.includes('@')) {
+      result = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, firebaseUidOrEmail));
+    }
 
     if (result.length === 0 || result[0].isAdmin !== 1) {
       return null;
