@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -12,17 +12,58 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [firebaseReady, setFirebaseReady] = useState(false);
+
+  useEffect(() => {
+    try {
+      const auth = getAuth();
+      if (auth) {
+        setFirebaseReady(true);
+        console.log('✅ Firebase Auth ready');
+      }
+    } catch (err) {
+      console.error('❌ Firebase not ready:', err);
+      setError('Firebase não está inicializado. Recarregue a página.');
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    console.log('📝 Iniciando login...');
     setIsLoading(true);
 
     try {
-      await signInWithEmailAndPassword(getAuth(), email, password);
+      console.log('🔐 Chamando Firebase signInWithEmailAndPassword...');
+      const auth = getAuth();
+      
+      if (!auth) {
+        throw new Error('Firebase Auth não está inicializado');
+      }
+
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log('✅ Login bem-sucedido!');
       router.push('/novo-esboço');
     } catch (err: any) {
-      const errorMessage = err.message || 'Erro ao fazer login';
+      let errorMessage = 'Erro ao fazer login';
+      console.error('❌ Login error:', err);
+      console.error('Error code:', err.code);
+      console.error('Error message:', err.message);
+      
+      if (err.code === 'auth/user-not-found') {
+        errorMessage = 'Usuário não encontrado';
+      } else if (err.code === 'auth/wrong-password') {
+        errorMessage = 'Senha incorreta';
+      } else if (err.code === 'auth/invalid-email') {
+        errorMessage = 'Email inválido';
+      } else if (err.code === 'auth/user-disabled') {
+        errorMessage = 'Usuário desabilitado';
+      } else if (err.code === 'auth/too-many-requests') {
+        errorMessage = 'Muitas tentativas. Tente novamente mais tarde';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -41,6 +82,12 @@ export default function LoginPage() {
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Entrar</h2>
 
+        {!firebaseReady && (
+          <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-yellow-800 text-sm">⏳ Carregando Firebase...</p>
+          </div>
+        )}
+
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-800 text-sm">{error}</p>
@@ -58,9 +105,8 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+              className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-blue focus:outline-none"
               required
-              disabled={isLoading}
             />
           </div>
 
@@ -73,28 +119,27 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-blue focus:border-transparent"
+              placeholder="Sua senha"
+              className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-blue focus:outline-none"
               required
-              disabled={isLoading}
             />
           </div>
 
           <button
             type="submit"
-            disabled={isLoading}
-            className="w-full btn-primary py-2 rounded-lg font-semibold transition-all disabled:opacity-50"
+            disabled={isLoading || !firebaseReady}
+            className="w-full btn-primary py-2 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Entrando...' : 'Entrar'}
+            {isLoading ? '⏳ Entrando...' : '🔓 Entrar'}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-gray-600">
           Não tem conta?{' '}
           <Link href="/register" className="text-primary-blue hover:underline font-semibold">
-            Criar conta
+            Criar Conta
           </Link>
-        </div>
+        </p>
       </div>
 
       {/* Footer */}
