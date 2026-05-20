@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const token = authHeader.substring(7);
     // Temporariamente: permitir qualquer usuário autenticado
     console.log('✅ GET /api/admin/ai-configs - Permitindo acesso a qualquer usuário autenticado');
 
@@ -39,7 +38,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const token = authHeader.substring(7);
     // Temporariamente: permitir qualquer usuário autenticado
     console.log('✅ POST /api/admin/ai-configs - Permitindo acesso a qualquer usuário autenticado');
 
