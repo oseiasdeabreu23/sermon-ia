@@ -87,9 +87,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user from database
-    const userResult = await db.select().from(users).where(eq(users.id, firebaseUser.uid));
+    const userResult = await db.select().from(users).where(eq(users.firebaseUid, firebaseUser.uid));
 
-    let userId = firebaseUser.uid;
+    let userId: string;
     if (!userResult.length) {
       // Create user if doesn't exist
       userId = uuidv4();
