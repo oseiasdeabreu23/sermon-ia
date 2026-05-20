@@ -24,16 +24,27 @@ export default function MeusEsbocosPage() {
     const fetchEsbocos = async () => {
       try {
         const { fetchWithAuth } = await import('@/lib/firebase-client');
+        console.log('🔍 Fetching sketches from /api/esbocos...');
         const response = await fetchWithAuth('/api/esbocos');
+        console.log('📍 Response status:', response.status);
+
         if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('❌ API Error:', errorData);
+
           if (response.status === 401) {
             throw new Error('Você precisa estar autenticado');
           }
-          throw new Error('Erro ao carregar esboços');
+          if (response.status === 500) {
+            throw new Error(`Erro no servidor: ${errorData.error || 'Erro desconhecido'}`);
+          }
+          throw new Error(`Erro ao carregar esboços (${response.status}): ${errorData.error || 'Tente novamente'}`);
         }
         const data = await response.json();
+        console.log('✅ Esboços carregados:', data.length);
         setEsbocos(data || []);
       } catch (err: any) {
+        console.error('❌ Error in fetchEsbocos:', err);
         setError(err.message || 'Erro ao carregar esboços');
       } finally {
         setIsLoading(false);
