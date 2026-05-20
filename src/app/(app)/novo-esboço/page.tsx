@@ -50,7 +50,7 @@ export default function NovoEsbocoPage() {
     try {
       const { fetchWithAuth } = await import('@/lib/firebase-client');
 
-      const response = await fetchWithAuth('/api/esboço/gerar', {
+      const response = await fetchWithAuth('/api/esbocos/gerar', {
         method: 'POST',
         body: JSON.stringify({
           jobId: newJobId,
